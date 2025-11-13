@@ -25,12 +25,16 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 
 
-app.get('/api/test', (req, res) => {
-  db.query('SELECT NOW() AS hora_actual', (err, result) => {
-    if (err) return res.status(500).json({ error: 'Error en la conexión' });
-    res.json({ mensaje: 'Servidor y BD OK', resultado: result });
-  });
-});
+// ===== Middleware de Roles =====
+function verificarRol(rolesPermitidos) {
+  return (req, res, next) => {
+    const rol = req.headers['x-rol']; // viene del frontend
+    if (!rolesPermitidos.includes(rol)) {
+      return res.status(403).json({ error: 'Acceso denegado' });
+    }
+    next();
+  };
+}
 
 
 
