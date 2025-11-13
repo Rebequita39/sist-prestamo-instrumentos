@@ -1,0 +1,90 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <title>Registro — Préstamo de Instrumentos</title>
+  <link rel="stylesheet" href="styles.css">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+</head>
+<body>
+  <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#0d6efd;">
+    <div class="container-fluid">
+      <a class="navbar-brand" href="/">Lab Instruments</a>
+      <a class="nav-link text-white" href="login.html">Iniciar Sesión</a>
+    </div>
+  </nav>
+
+  <main class="container mt-5" style="max-width:460px;">
+    <h2 class="text-center mb-4 text-primary">Registro de Usuario</h2>
+
+    <form id="registroForm" class="bg-white p-4 shadow rounded">
+      <div class="mb-3">
+        <label for="nombre" class="form-label">Nombre</label>
+        <input type="text" class="form-control" id="nombre" required>
+      </div>
+      <div class="mb-3">
+        <label for="correo" class="form-label">Correo</label>
+        <input type="email" class="form-control" id="correo" required>
+      </div>
+      <div class="mb-3">
+        <label for="password" class="form-label">Contraseña</label>
+        <input type="password" class="form-control" id="password" required>
+      </div>
+      <div class="mb-3">
+        <label for="rol" class="form-label">Rol</label>
+        <select id="rol" class="form-select">
+          <option value="ASISTENTE" selected>Asistente</option>
+          <option value="ADMIN">Administrador</option>
+          <option value="AUDITOR">Auditor</option>
+        </select>
+      </div>
+      <button type="submit" class="btn btn-primary w-100">Registrar</button>
+    </form>
+
+    <p class="text-center mt-3">
+      ¿Ya tienes cuenta? <a href="login.html">Inicia sesión</a>
+    </p>
+
+    <div id="mensaje" class="text-center mt-3 text-danger"></div>
+  </main>
+
+  <script>
+    const form = document.getElementById('registroForm');
+    const mensaje = document.getElementById('mensaje');
+
+    form.addEventListener('submit', async e => {
+      e.preventDefault();
+      mensaje.textContent = '';
+
+      const data = {
+        nombre: nombre.value.trim(),
+        correo: correo.value.trim(),
+        password: password.value.trim(),
+        rol: rol.value
+      };
+
+      try {
+        const res = await fetch('/api/auth/register', {
+          method: 'POST',
+          headers: { 'Content-Type': 'application/json' },
+          body: JSON.stringify(data)
+        });
+        const result = await res.json();
+
+        if (res.ok) {
+          mensaje.classList.remove('text-danger');
+          mensaje.classList.add('text-success');
+          mensaje.textContent = result.mensaje || 'Usuario registrado';
+          setTimeout(() => (window.location.href = 'login.html'), 1200);
+        } else {
+          mensaje.textContent = result.error || 'Error al registrar';
+        }
+      } catch (err) {
+        mensaje.textContent = 'Error de conexión con el servidor';
+        console.error(err);
+      }
+    });
+  </script>
+</body>
+</html>
