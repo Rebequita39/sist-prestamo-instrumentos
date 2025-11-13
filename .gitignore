@@ -1,0 +1,9 @@
+# Archivos de entorno y configuraciones privadas
+.env
+
+# Dependencias
+node_modules/
+
+# Archivos temporales
+uploads/
+.DS_Store
