@@ -133,6 +133,59 @@ app.get('/api/instrumentos/download', (req, res) => {
   });
 });
 
+// Registrar préstamo
+app.post('/api/prestamos', (req, res) => {
+  const { instrumento_id, usuario_correo } = req.body;
+  if (!instrumento_id || !usuario_correo)
+    return res.status(400).json({ error: 'Datos incompletos' });
+
+  db.query('INSERT INTO prestamos (instrumento_id, usuario_correo) VALUES (?, ?)',
+    [instrumento_id, usuario_correo],
+    (err, result) => {
+      if (err) return res.status(500).json({ error: 'Error al registrar préstamo' });
+
+      // Actualizar estado del instrumento
+      db.query('UPDATE instrumentos SET estado="PRESTADO" WHERE id=?', [instrumento_id]);
+      res.json({ mensaje: 'Préstamo registrado correctamente' });
+    }
+  );
+});
+
+// Listar préstamos
+app.get('/api/prestamos', (req, res) => {
+  db.query(`
+    SELECT p.id, i.nombre AS instrumento, p.usuario_correo, p.fecha_salida, p.fecha_regreso
+    FROM prestamos p
+    JOIN instrumentos i ON p.instrumento_id = i.id
+  `, (err, results) => {
+    if (err) return res.status(500).json({ error: 'Error al obtener préstamos' });
+    res.json(results);
+  });
+});
+
+// Marcar devolución
+app.put('/api/prestamos/:id/devolver', (req, res) => {
+  db.query('UPDATE prestamos SET fecha_regreso=NOW() WHERE id=?', [req.params.id], err => {
+    if (err) return res.status(500).json({ error: 'Error al registrar devolución' });
+    // Cambiar estado de instrumento
+    db.query('UPDATE instrumentos SET estado="DISPONIBLE" WHERE id=(SELECT instrumento_id FROM prestamos WHERE id=?)', [req.params.id]);
+    res.json({ mensaje: 'Instrumento devuelto correctamente' });
+  });
+});
+
+
+app.get('/api/usuarios', verificarRol(['ADMIN']), (req, res) => {
+  db.query('SELECT id, nombre, correo, rol FROM usuarios', (err, results) => {
+    if (err) return res.status(500).json({ error: 'Error al obtener usuarios' });
+    res.json(results);
+  });
+});
+
+app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
+app.use((err, req, res, next) => {
+  console.error('Error interno:', err);
+  res.status(500).json({ error: 'Error interno del servidor' });
+});
 
 
 
