@@ -1,1 +1,2 @@
 # sist-prestamo-instrumentos
+Proyecto desarrollado para el Mini Hackatón U3, cuyo objetivo es construir un sistema web sencillo para gestionar el catálogo de instrumentos y registrar préstamos básicos de laboratorio. Integra login/logout con contraseñas encriptadas, roles de usuario, CRUD de instrumentos (crear, ver, editar, eliminar), búsqueda en vivo, importar y exportar archivos .xslx y una interfaz con Bootstrap y navegación simple.
