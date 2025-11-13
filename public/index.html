@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1" />
+  <title>Préstamo de Instrumentos — Inicio</title>
+
+
+  <!-- futura integración de bootstrap: <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.x/dist/css/bootstrap.min.css" rel="stylesheet"> -->
+
+  <!-- Estilos propios -->
+  <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+  <header class="site-header">
+    <nav class="nav">
+      <a class="logo" href="/">Lab Instruments</a>
+      <ul class="nav-links">
+        <li><a href="login.html">Login</a></li>
+        <li><a href="instrumentos.html">Instrumentos</a></li>
+        <li><a href="busqueda.html">Búsqueda</a></li>
+      </ul>
+    </nav>
+  </header>
+
+  <main class="container">
+    <h1>Bienvenido al sistema de Préstamo de Instrumentos</h1>
+    <p>Usa el menú para iniciar sesión, ver el catálogo o buscar instrumentos.</p>
+
+    <!-- Área donde el frontend insertará el contenido dinámico -->
+    <section id="app">
+      <!-- Lista, formularios o mensajes aparecerán aquí -->
+    </section>
+  </main>
+
+  <footer class="site-footer">
+    <p>© <span id="year"></span> Laboratorio</p>
+  </footer>
+
+  <script>
+    document.getElementById('year').textContent = new Date().getFullYear();
+  </script>
+
+  <!-- scripts -->
+
+</body>
+</html>
