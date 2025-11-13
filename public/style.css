@@ -1,0 +1,72 @@
+/* public/styles.css - esquema azul/blanco básico */
+:root{
+  --azul: #0d6efd;      /* azul principal (puedes cambiar) */
+  --blanco: #ffffff;
+  --gris-claro: #f6f8fb;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+body{
+  font-family: system-ui, -apple-system, "Segoe UI", Roboto, "Helvetica Neue", Arial;
+  background: var(--gris-claro);
+  color: #111;
+  line-height:1.4;
+  min-height:100vh;
+  display:flex;
+  flex-direction:column;
+}
+
+.site-header{
+  background: linear-gradient(90deg, var(--azul), #0b5ed7);
+  color: var(--blanco);
+  padding: 0.6rem 1rem;
+  box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+}
+
+.nav{
+  display:flex;
+  align-items:center;
+  justify-content:space-between;
+  max-width:1000px;
+  margin:0 auto;
+}
+
+.logo{
+  font-weight:700;
+  color:var(--blanco);
+  text-decoration:none;
+}
+
+.nav-links{
+  list-style:none;
+  display:flex;
+  gap:1rem;
+}
+
+.nav-links a{
+  color:var(--blanco);
+  text-decoration:none;
+  padding:0.25rem 0.5rem;
+  border-radius:4px;
+}
+
+.nav-links a:hover{
+  background: rgba(255,255,255,0.12);
+}
+
+.container{
+  max-width:1000px;
+  margin:2rem auto;
+  padding:1rem;
+  background:var(--blanco);
+  border-radius:8px;
+  box-shadow: 0 6px 18px rgba(13, 110, 253, 0.06);
+}
+
+.site-footer{
+  margin-top:auto;
+  padding:1rem;
+  text-align:center;
+  color:#444;
+  font-size:0.9rem;
+}
