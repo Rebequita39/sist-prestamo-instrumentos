@@ -1,0 +1,22 @@
+{
+  "name": "prestamo-instrumentos",
+  "version": "1.0.0",
+  "description": "Proyecto desarrollado para el Mini Hackatón U3, cuyo objetivo es construir un sistema web sencillo para gestionar el catálogo de instrumentos y registrar préstamos básicos de laboratorio. Integra login/logout con contraseñas encriptadas, roles de usuario, CRUD de instrumentos (crear, ver, editar, eliminar), búsqueda en vivo, importar y exportar archivos .xslx y una interfaz con Bootstrap y navegación simple.",
+  "main": "server.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node server.js"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/rebequita39/sist-prestamo-instrumentos.git"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "commonjs",
+  "bugs": {
+    "url": "https://github.com/rebequita39/sist-prestamo-instrumentos/issues"
+  },
+  "homepage": "https://github.com/rebequita39/sist-prestamo-instrumentos#readme"
+}
