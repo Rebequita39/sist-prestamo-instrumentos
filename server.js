@@ -67,10 +67,15 @@ app.post('/api/auth/login', (req, res) => {
     res.json({ mensaje: 'Login exitoso', usuario: { nombre: user.nombre, rol: user.rol } });
   });
 });
+// ====== AUTH: Logout ======
+app.post('/api/auth/logout', (req, res) => {
+  // No hay sesión real, así que simplemente se responde con éxito
+  res.json({ mensaje: 'Logout exitoso. Sesión finalizada.' });
+});
 
 
 // Obtener todos los instrumentos
-app.get('/api/instrumentos', (req, res) => {
+app.get('/api/instrumentos', verificarSesion,(req, res) => {
   db.query('SELECT * FROM instrumentos', (err, results) => {
     if (err) return res.status(500).json({ error: 'Error al obtener instrumentos' });
     res.json(results);
@@ -78,7 +83,7 @@ app.get('/api/instrumentos', (req, res) => {
 });
 
 // Agregar instrumento
-app.post('/api/instrumentos', (req, res) => {
+app.post('/api/instrumentos', verificarSesion, verificarRol(['ADMIN', 'ASISTENTE']),  (req, res) => {
   const { nombre, categoria, estado, ubicacion } = req.body;
   if (!nombre || !categoria) return res.status(400).json({ error: 'Datos incompletos' });
 
@@ -125,7 +130,7 @@ app.post('/api/instrumentos/upload', upload.single('excelFile'), (req, res) => {
 });
 
 // Descargar Excel
-app.get('/api/instrumentos/download', (req, res) => {
+app.get('/api/instrumentos/download', verificarSesion, verificarRol(['ADMIN']), (req, res) => {
   db.query('SELECT * FROM instrumentos', (err, results) => {
     if (err) return res.status(500).json({ error: 'Error al exportar' });
     const ws = xlsx.utils.json_to_sheet(results);
@@ -156,7 +161,7 @@ app.post('/api/prestamos', (req, res) => {
 });
 
 // Listar préstamos
-app.get('/api/prestamos', (req, res) => {
+app.get('/api/prestamos', verificarSesion, verificarRol(['ADMIN', 'ASISTENTE']), (req, res) => {
   db.query(`
     SELECT p.id, i.nombre AS instrumento, p.usuario_correo, p.fecha_salida, p.fecha_regreso
     FROM prestamos p
@@ -178,7 +183,7 @@ app.put('/api/prestamos/:id/devolver', (req, res) => {
 });
 
 
-app.get('/api/usuarios', verificarRol(['ADMIN']), (req, res) => {
+app.get('/api/usuarios', verificarSesion, verificarRol(['ADMIN']),  (req, res) => {
   db.query('SELECT id, nombre, correo, rol FROM usuarios', (err, results) => {
     if (err) return res.status(500).json({ error: 'Error al obtener usuarios' });
     res.json(results);
