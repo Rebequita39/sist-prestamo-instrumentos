@@ -10,7 +10,7 @@ const bodyParser = require('body-parser');
 const app = express();
 require('dotenv').config();
 
-// ===== Conexión a la DB =====
+// ⋆.ೃ࿔🌸*:･ Conexión a la DB 
 const db = mysql.createConnection({
   host: process.env.DB_HOST,
   user: process.env.DB_USER,
@@ -26,7 +26,7 @@ db.connect(err => {
   console.log('Conectado a la base de datos');
 });
 
-// ===== Middleware global =====
+// ⋆.ೃ࿔🌸*:･  Middleware global 
 app.use(express.static(path.join(__dirname, 'public'), {
   index: false
 }));
@@ -34,7 +34,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(express.json());
 app.use(bodyParser.urlencoded({ extended: true }));
 
-// Configuración de la sesión
+// ⋆.ೃ࿔🌸*:･ Configuración de la sesión
 app.use(session({
   secret: process.env.SESSION_SECRET || 'secretKey',
   resave: false,
@@ -42,7 +42,7 @@ app.use(session({
   cookie: { secure: false }
 }));
 
-// Middleware de debug
+// ⋆.ೃ࿔🌸*:･ Middleware de debug
 app.use((req, res, next) => {
   console.log('=== DEBUG REQUEST ===');
   console.log('Method:', req.method);
@@ -53,7 +53,7 @@ app.use((req, res, next) => {
   next();
 });
 
-// ===== Middlewares de autenticación =====
+// ⋆.ೃ࿔🌸*:･ Middlewares de autenticación 
 function requireLogin(req, res, next) {
   if (!req.session.userId) {
     return res.redirect('/login');
@@ -86,7 +86,7 @@ function requireRole(allowedRoles) {
   };
 }
 
-// Middleware para verificar sesión en APIs
+// ⋆.ೃ࿔🌸*:･ Middleware para verificar sesión en APIs
 function requireAuth(req, res, next) {
   if (!req.session.userId) {
     return res.status(401).json({ error: 'No autenticado' });
@@ -96,7 +96,7 @@ function requireAuth(req, res, next) {
 
 // ===== RUTAS PÚBLICAS =====
 
-// Servir páginas de login y registro
+// ⋆.ೃ࿔🌸*:･ Servir páginas de login y registro
 app.get('/login', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'login.html'));
 });
@@ -105,7 +105,7 @@ app.get('/registro', (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'registro.html'));
 });
 
-// Login para API (compatible con frontend)
+// ⋆.ೃ࿔🌸*:･ Login para API (compatible con frontend)
 app.post('/api/auth/login', async (req, res) => {
   console.log('=== LOGIN API ATTEMPT ===');
   console.log('Correo:', req.body.correo);
@@ -147,7 +147,7 @@ app.post('/api/auth/login', async (req, res) => {
         });
       }
 
-      // Establecer sesión
+      // ⋆.ೃ࿔🌸*:･ Establecer sesión
       req.session.userId = user.id;
       req.session.user = {
         id: user.id,
@@ -158,7 +158,7 @@ app.post('/api/auth/login', async (req, res) => {
 
       console.log('Login API exitoso, usuario:', user.nombre);
       
-      // Respuesta que espera el frontend
+      // ⋆.ೃ࿔🌸*:･ Respuesta que espera el frontend
       res.json({
         mensaje: 'Login exitoso',
         usuario: {
@@ -177,7 +177,7 @@ app.post('/api/auth/login', async (req, res) => {
   });
 });
 
-// Registro de usuario (formulario HTML)
+// ⋆.ೃ࿔🌸*:･ Registro de usuario (formulario HTML)
 app.post('/registrar', async (req, res) => {
   const { nombre, correo, password, codigo_acceso } = req.body;
   
@@ -221,7 +221,7 @@ app.post('/registrar', async (req, res) => {
   }
 });
 
-// Login (formulario HTML)
+// ⋆.ೃ࿔🌸*:･ Login (formulario HTML)
 app.post('/login', async (req, res) => {
   const { correo, password } = req.body;
   
@@ -285,7 +285,7 @@ app.post('/login', async (req, res) => {
         return res.send(html);
       }
 
-      // Establecer sesión
+      //⋆.ೃ࿔🌸*:･ Establecer sesión
       req.session.userId = user.id;
       req.session.user = {
         id: user.id,
@@ -316,12 +316,12 @@ app.post('/login', async (req, res) => {
 
 // ===== RUTAS PROTEGIDAS =====
 
-// Ruta principal protegida
+// ⋆.ೃ࿔🌸*:･ Ruta principal protegida
 app.get('/', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'index.html'));
 });
 
-// Servir páginas protegidas
+// ⋆.ೃ࿔🌸*:･ Servir páginas protegidas
 app.get('/instrumentos.html', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'instrumentos.html'));
 });
@@ -330,18 +330,18 @@ app.get('/busqueda.html', requireLogin, (req, res) => {
   res.sendFile(path.join(__dirname, 'public', 'busqueda.html'));
 });
 
-// Ruta para obtener el tipo de usuario actual
+// ⋆.ೃ࿔🌸*:･ Ruta para obtener el tipo de usuario actual
 app.get('/tipo-usuario', requireLogin, (req, res) => {
   res.json({ tipo_usuario: req.session.user.rol });
 });
 
-// Cerrar sesión
+// ⋆.ೃ࿔🌸*:･ Cerrar sesión
 app.get('/logout', (req, res) => {
   req.session.destroy();
   res.redirect('/login');
 });
 
-// ===== INSTRUMENTOS =====
+// ⋆.ೃ࿔🌸*:･ INSTRUMENTOS 
 
 // Obtener lista
 app.get('/api/instrumentos', requireAuth, (req, res) => {
@@ -351,7 +351,7 @@ app.get('/api/instrumentos', requireAuth, (req, res) => {
   });
 });
 
-// Crear instrumento
+// ⋆.ೃ࿔🌸*:･ Crear instrumento
 app.post(
   '/api/instrumentos',
   requireAuth,
@@ -373,7 +373,7 @@ app.post(
   }
 );
 
-// Buscar instrumento
+// ⋆.ೃ࿔🌸*:･ Buscar instrumento
 app.get('/api/instrumentos/buscar', requireAuth, (req, res) => {
   const q = `%${req.query.q || ''}%`;
 
@@ -387,7 +387,7 @@ app.get('/api/instrumentos/buscar', requireAuth, (req, res) => {
   );
 });
 
-// Subir Excel
+// ⋆.ೃ࿔🌸*:･ Subir Excel
 const upload = multer({ dest: 'uploads/' });
 app.post(
   '/api/instrumentos/upload',
@@ -410,7 +410,7 @@ app.post(
   }
 );
 
-// Descargar Excel
+// ⋆.ೃ࿔🌸*:･ Descargar Excel
 app.get(
   '/api/instrumentos/download',
   requireAuth,
@@ -432,7 +432,7 @@ app.get(
   }
 );
 
-// ===== PRÉSTAMOS =====
+// ⋆.ೃ࿔🌸*:･ PRÉSTAMOS 
 
 // Registrar
 app.post(
@@ -461,7 +461,7 @@ app.post(
   }
 );
 
-// Listar préstamos
+// ⋆.ೃ࿔🌸*:･ Listar préstamos
 app.get(
   '/api/prestamos',
   requireAuth,
@@ -482,7 +482,7 @@ app.get(
   }
 );
 
-// Devolver instrumento
+//⋆.ೃ࿔🌸*:･ Devolver instrumento
 app.put(
   '/api/prestamos/:id/devolver',
   requireAuth,
@@ -506,7 +506,7 @@ app.put(
   }
 );
 
-// ===== Usuarios (ADMIN) =====
+// ⋆.ೃ࿔🌸*:･ Usuarios (ADMIN)
 app.get(
   '/api/usuarios',
   requireAuth,
@@ -519,14 +519,14 @@ app.get(
   }
 );
 
-// ===== Rutas no encontradas y errores =====
+// ⋆.ೃ࿔🌸*:･ Rutas no encontradas y errores 
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 app.use((err, req, res, next) => {
   console.error('Error interno:', err);
   res.status(500).json({ error: 'Error interno del servidor' });
 });
 
-// ===== Servidor =====
+// ⋆.ೃ࿔🌸*:･ Servidor 
 const PORT = process.env.PORT || 3000;
 app.listen(PORT, () =>
   console.log(`Servidor en funcionamiento en el puerto ${PORT}`)
