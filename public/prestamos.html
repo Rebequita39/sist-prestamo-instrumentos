@@ -9,7 +9,16 @@
 </head>
 <body>
     
-  <div id="navbar"></div>
+<div id="navbar"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('navbar.html')
+      .then(r => r.text())
+      .then(html => document.getElementById('navbar').innerHTML = html);
+  });
+</script>
+
 
   <main class="container mt-4">
     <h2 class="text-primary mb-3">Registro de Préstamos</h2>

@@ -13,14 +13,16 @@
 </head>
 <body>
   <header class="site-header">
-    <nav class="nav">
-      <a class="logo" href="/">Lab Instruments</a>
-      <ul class="nav-links">
-        <li><a href="login.html">Login</a></li>
-        <li><a href="instrumentos.html">Instrumentos</a></li>
-        <li><a href="busqueda.html">Búsqueda</a></li>
-      </ul>
-    </nav>
+    <div id="navbar"></div>
+
+<script>
+  document.addEventListener('DOMContentLoaded', () => {
+    fetch('navbar.html')
+      .then(r => r.text())
+      .then(html => document.getElementById('navbar').innerHTML = html);
+  });
+</script>
+
   </header>
 
   <main class="container">
