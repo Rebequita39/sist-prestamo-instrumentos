@@ -183,7 +183,7 @@ app.put('/api/prestamos/:id/devolver', (req, res) => {
 });
 
 
-app.get('/api/usuarios', verificarRol(['ADMIN']), (req, res) => {
+app.get('/api/usuarios', verificarSesion, verificarRol(['ADMIN']),  (req, res) => {
   db.query('SELECT id, nombre, correo, rol FROM usuarios', (err, results) => {
     if (err) return res.status(500).json({ error: 'Error al obtener usuarios' });
     res.json(results);
