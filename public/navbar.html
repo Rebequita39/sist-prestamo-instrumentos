@@ -2,7 +2,14 @@
   <div class="container-fluid">
     <a class="navbar-brand" href="index.html">Lab Instruments</a>
 
-    <div class="collapse navbar-collapse">
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
+      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
+      aria-label="Toggle navigation">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+
+    <div class="collapse navbar-collapse" id="navbarNav">
+
       <ul class="navbar-nav me-auto">
 
         <li class="nav-item" id="navInstrumentos">
@@ -29,37 +36,51 @@
 
       <span id="userInfo" class="navbar-text text-white me-3"></span>
       <button id="logoutBtn" class="btn btn-light btn-sm">Salir</button>
+
     </div>
   </div>
 </nav>
 
-
 <script>
-  const user = JSON.parse(localStorage.getItem('usuario'));
+/* ==========================
+   VALIDAR SESIÓN
+========================== */
+const userData = localStorage.getItem('usuario');
 
-  if (!user) {
-    window.location.href = 'login.html';
-  }
+if (!userData) {
+  window.location.href = 'login.html';
+}
 
-  document.getElementById('userInfo').textContent = `${user.nombre} (${user.rol})`;
+const user = JSON.parse(userData);
 
-  // Ocultar opciones según rol
-  if (user.rol === 'ASISTENTE') {
-    document.getElementById('navUsuarios').style.display = 'none'; // no puede administrar usuarios
-  }
+// Mostrar nombre y rol
+document.getElementById('userInfo').textContent = `${user.nombre} (${user.rol})`;
 
-  if (user.rol === 'AUDITOR') {
-    document.getElementById('navPrestamos').style.display = 'none';
-    document.getElementById('navUsuarios').style.display = 'none';
-    document.getElementById('navExcel').style.display = 'none';
-  }
+/* ==========================
+   CONTROL DE ROLES
+========================== */
 
-  // Logout
-  document.getElementById('logoutBtn').onclick = () => {
-    localStorage.clear();
-    fetch('/api/auth/logout', { method: 'POST' });
-    window.location.href = 'login.html';
-  };
+// ASISTENTE → NO puede ver Usuarios / Excel
+if (user.rol === 'ASISTENTE') {
+  document.getElementById('navUsuarios')?.classList.add("d-none");
+  document.getElementById('navExcel')?.classList.add("d-none");
+}
+
+// AUDITOR → apenas puede consultar
+if (user.rol === 'AUDITOR') {
+  document.getElementById('navPrestamos')?.classList.add("d-none");
+  document.getElementById('navUsuarios')?.classList.add("d-none");
+  document.getElementById('navExcel')?.classList.add("d-none");
+}
+
+/* ==========================
+   LOGOUT
+========================== */
+document.getElementById('logoutBtn').onclick = () => {
+  localStorage.clear();
+  fetch('/api/auth/logout', { method: 'POST' });
+  window.location.href = 'login.html';
+};
 </script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
