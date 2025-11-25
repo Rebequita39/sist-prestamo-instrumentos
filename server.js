@@ -519,6 +519,148 @@ app.get(
   }
 );
 
+// Crear usuario (solo ADMIN)
+app.post(
+  '/api/usuarios',
+  requireAuth,
+  requireRole(['ADMIN']),
+  async (req, res) => {
+    const { nombre, correo, password, rol } = req.body;
+
+    // Validación
+    if (!nombre || !correo || !password || !rol) {
+      return res.status(400).json({ error: 'Todos los campos son obligatorios' });
+    }
+
+    try {
+      // Hash
+      const hashed = await bcrypt.hash(password, 10);
+
+      // Insert
+      const query = `
+        INSERT INTO usuarios (nombre, correo, password_hash, rol)
+        VALUES (?, ?, ?, ?)
+      `;
+
+      db.query(query, [nombre, correo, hashed, rol], (err) => {
+        if (err) {
+          console.error('Error INSERT usuario:', err);
+          return res.status(500).json({ error: 'Error al crear usuario' });
+        }
+
+        res.json({ mensaje: 'Usuario creado correctamente' });
+      });
+
+    } catch (err) {
+      console.error('Error en /api/usuarios:', err);
+      res.status(500).json({ error: 'Error interno del servidor' });
+    }
+  }
+);
+
+
+// ⋆.ೃ࿔🌸*:･ EDITAR INSTRUMENTO
+app.put(
+  '/api/instrumentos/:id',
+  requireAuth,
+  requireRole(['ADMIN', 'ASISTENTE']),
+  (req, res) => {
+    const { id } = req.params;
+    const { nombre, categoria, estado, ubicacion } = req.body;
+
+    if (!nombre || !categoria) {
+      return res.status(400).json({ error: 'Datos incompletos' });
+    }
+
+    const sql = `
+      UPDATE instrumentos 
+      SET nombre = ?, categoria = ?, estado = ?, ubicacion = ?
+      WHERE id = ?
+    `;
+
+    db.query(sql, [nombre, categoria, estado, ubicacion, id], (err, result) => {
+      if (err) {
+        console.error('Error al actualizar instrumento:', err);
+        return res.status(500).json({ error: 'Error al actualizar instrumento' });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: 'Instrumento no encontrado' });
+      }
+
+      res.json({ mensaje: 'Instrumento actualizado correctamente' });
+    });
+  }
+);
+
+// ⋆.ೃ࿔🌸*:･ EDITAR USUARIO (ADMIN)
+app.put(
+  '/api/usuarios/:id',
+  requireAuth,
+  requireRole(['ADMIN']),
+  async (req, res) => {
+    const { id } = req.params;
+    const { nombre, correo, password, rol } = req.body;
+
+    if (!nombre || !correo || !rol) {
+      return res.status(400).json({ error: 'Datos incompletos' });
+    }
+
+    let updateFields = [nombre, correo, rol, id];
+    let sql = `
+      UPDATE usuarios
+      SET nombre = ?, correo = ?, rol = ?
+      WHERE id = ?
+    `;
+
+    // Si se envía password, se hashea
+    if (password && password.trim() !== "") {
+      const hashed = await bcrypt.hash(password, 10);
+      sql = `
+        UPDATE usuarios
+        SET nombre = ?, correo = ?, rol = ?, password_hash = ?
+        WHERE id = ?
+      `;
+      updateFields = [nombre, correo, rol, hashed, id];
+    }
+
+    db.query(sql, updateFields, (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Error al actualizar usuario" });
+      }
+      res.json({ mensaje: "Usuario actualizado correctamente" });
+    });
+  }
+);
+
+
+// ⋆.ೃ࿔🌸*:･ BORRAR USUARIO (ADMIN)
+app.delete(
+  '/api/usuarios/:id',
+  requireAuth,
+  requireRole(['ADMIN']),
+  (req, res) => {
+    const { id } = req.params;
+
+    db.query("DELETE FROM usuarios WHERE id = ?", [id], (err, result) => {
+      if (err) {
+        console.error(err);
+        return res.status(500).json({ error: "Error al eliminar usuario" });
+      }
+
+      if (result.affectedRows === 0) {
+        return res.status(404).json({ error: "Usuario no encontrado" });
+      }
+
+      res.json({ mensaje: "Usuario eliminado correctamente" });
+    });
+  }
+);
+
+
+
+
 // ⋆.ೃ࿔🌸*:･ Rutas no encontradas y errores 
 app.use((req, res) => res.status(404).json({ error: 'Ruta no encontrada' }));
 app.use((err, req, res, next) => {
