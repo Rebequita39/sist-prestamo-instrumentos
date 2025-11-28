@@ -3,10 +3,10 @@
 ======================================= */
 
 :root {
-  --bs-primary: #E5A8BF !important;           /* Rosa acento */
+  --bs-primary: #E5A8BF !important;          
   --bs-primary-rgb: 229, 168, 191 !important;
 
-  --bs-secondary: #4B3832 !important;         /* Café */
+  --bs-secondary: #4B3832 !important;         
   --bs-secondary-rgb: 75, 56, 50 !important;
 
   --bs-info: #F6D0CB !important;
