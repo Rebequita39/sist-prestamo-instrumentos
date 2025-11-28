@@ -1,7 +1,6 @@
 
-  <!-- Estilo local opcional -->
-  <link rel="stylesheet" href="style.css">
-  
+  <!-- Estilo local -->
+<link rel="stylesheet" href="style.css">
 
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#0d6efd;">
   <div class="container-fluid">
@@ -29,67 +28,69 @@
           <a class="nav-link" href="prestamos.html">Préstamos</a>
         </li>
 
-        <li class="nav-item" id="navUsuarios">
+        <!-- Solo ADMIN podrá ver esta opción -->
+        <li class="nav-item d-none" id="navUsuarios">
           <a class="nav-link" href="usuarios.html">Usuarios</a>
         </li>
 
-      
-        <li class="nav-item" id="navUsuarios">
-         <button id="logoutBtn" class="btn btn-sm" style="background-color:#FFE2DF; border:none;">
-          <a href="/logout" style="text-decoration:none; color:#4B3832; font-weight:600;">
-            Salir
-          </a>
-        </button>
+        <!-- Logout -->
+        <li class="nav-item">
+          <button id="logoutBtn" class="btn btn-sm" style="background-color:#FFE2DF; border:none;">
+            <a href="/logout" style="text-decoration:none; color:#4B3832; font-weight:600;">
+              Salir
+            </a>
+          </button>
         </li>
 
       </ul>
-
-     
-
 
     </div>
   </div>
 </nav>
 
 <script>
-/* ==========================
-   VALIDAR SESIÓN
-========================== */
-const userData = localStorage.getItem('usuario');
+/* ================================
+   VERIFICAR SESIÓN/ROL DESDE BACKEND
+================================ */
+fetch('/tipo-usuario', { credentials: 'include' })
+  .then(res => {
+    if (res.status === 401) {
+      window.location.href = '/login';
+      return;
+    }
+    return res.json();
+  })
+  .then(data => {
+    if (!data) return;
 
-if (!userData) {
-  window.location.href = 'login.html';
-}
+    const rol = (data.tipo_usuario || data.rol || '').toUpperCase();
 
-const user = JSON.parse(userData);
+    // === ROLES ===
+    if (rol === "ADMIN") {
+      document.getElementById("navUsuarios").classList.remove("d-none");
+    }
 
-// Mostrar nombre y rol
-document.getElementById('userInfo').textContent = `${user.nombre} (${user.rol})`;
+    if (rol === "ASISTENTE") {
+      // Sin acceso a Usuarios
+      document.getElementById("navUsuarios").classList.add("d-none");
+    }
 
-/* ==========================
-   CONTROL DE ROLES
-========================== */
+    if (rol === "AUDITOR") {
+      // Auditor no modifica ni préstamos
+      document.getElementById("navUsuarios").classList.add("d-none");
+      document.getElementById("navPrestamos").classList.add("d-none");
+    }
+  })
+  .catch(err => {
+    console.error("Error verificando rol:", err);
+    window.location.href = '/login';
+  });
 
-// ASISTENTE → NO puede ver Usuarios / Excel
-if (user.rol === 'ASISTENTE') {
-  document.getElementById('navUsuarios')?.classList.add("d-none");
-  document.getElementById('navExcel')?.classList.add("d-none");
-}
-
-// AUDITOR → apenas puede consultar
-if (user.rol === 'AUDITOR') {
-  document.getElementById('navPrestamos')?.classList.add("d-none");
-  document.getElementById('navUsuarios')?.classList.add("d-none");
-  document.getElementById('navExcel')?.classList.add("d-none");
-}
-
-/* ==========================
-   LOGOUT
-========================== */
+/* ================================
+    LOGOUT
+================================ */
 document.getElementById('logoutBtn').onclick = () => {
-  localStorage.clear();
-  fetch('/api/auth/logout', { method: 'POST' });
-  window.location.href = 'login.html';
+  fetch('/logout', { method: 'GET' });
 };
 </script>
 
