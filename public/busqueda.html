@@ -54,13 +54,40 @@
 <body>
 
   <div id="navbar"></div>
-  <script>
-    document.addEventListener('DOMContentLoaded', () => {
-      fetch('navbar.html')
-        .then(r => r.text())
-        .then(html => document.getElementById('navbar').innerHTML = html);
+  <div id="navbar"></div>
+
+<script>
+fetch("navbar.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("navbar").innerHTML = html;
+    inicializarNavbar(); // Ejecutar controles DESPUÉS de insertar el navbar
+  });
+
+function inicializarNavbar() {
+
+  fetch('/tipo-usuario', { credentials: 'include' })
+    .then(r => r.json())
+    .then(data => {
+      const rol = (data.tipo_usuario || data.rol || "").toUpperCase();
+
+      if (rol === "ADMIN") {
+        document.getElementById("navUsuarios")?.classList.remove("d-none");
+      }
+
+      if (rol === "ASISTENTE") {
+        document.getElementById("navUsuarios")?.classList.add("d-none");
+      }
+
+      if (rol === "AUDITOR") {
+        document.getElementById("navUsuarios")?.classList.add("d-none");
+        document.getElementById("navPrestamos")?.classList.add("d-none");
+      }
     });
-  </script>
+}
+</script>
+
+
 
   <main class="container mt-4">
     <h2 class="text-acento mb-3">Búsqueda en Vivo</h2>

@@ -18,12 +18,69 @@
 </head>
 <body>
 
-  <!-- navbar dinámico (si lo tienes) -->
-  <div id="navbar-placeholder"></div>
+
+  <div id="navbar"></div>
+  <script>
+fetch("navbar.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("navbar").innerHTML = html;
+    inicializarNavbar(); // Ejecutar controles DESPUÉS de insertar el navbar
+  });
+
+function inicializarNavbar() {
+
+  fetch('/tipo-usuario', { credentials: 'include' })
+    .then(r => r.json())
+    .then(data => {
+      const rol = (data.tipo_usuario || data.rol || "").toUpperCase();
+
+      if (rol === "ADMIN") {
+        document.getElementById("navUsuarios")?.classList.remove("d-none");
+      }
+
+      if (rol === "ASISTENTE") {
+        document.getElementById("navUsuarios")?.classList.add("d-none");
+      }
+
+      if (rol === "AUDITOR") {
+        document.getElementById("navUsuarios")?.classList.add("d-none");
+        document.getElementById("navPrestamos")?.classList.add("d-none");
+      }
+    });
+}
+</script>
 
   <div class="container mt-4">
+
     <h1 class="section-title mb-3">Gestión de Instrumentos</h1>
     <p class="text-muted">Administra el catálogo de instrumentos.</p>
+
+        
+    <!-- IMPORTAR / EXPORTAR EXCEL (Solo ADMIN) -->
+    <div class="card p-4 shadow-sm mb-4" id="excelSection" style="display:none;">
+        <h5 class="mb-3" style="font-family:'Pixelify Sans';">Importar / Exportar Instrumentos</h5>
+
+        <div class="row g-3">
+            
+            <!-- SUBIR EXCEL -->
+            <div class="col-md-6">
+                <form id="formUploadExcel" enctype="multipart/form-data">
+                    <label class="form-label">Importar Excel (.xlsx)</label>
+                    <input type="file" name="excelFile" class="form-control" accept=".xlsx" required>
+                    <button class="btn btn-primary mt-2" type="submit">Subir archivo</button>
+                </form>
+            </div>
+
+            <!-- DESCARGAR EXCEL -->
+            <div class="col-md-6 d-flex align-items-end">
+                <button class="btn btn-secondary w-100" onclick="descargarExcel()">
+                    Descargar Excel
+                </button>
+            </div>
+
+        </div>
+    </div>
 
     <!-- Form Crear (se oculta si rol = AUDITOR) -->
     <div id="cardCrear" class="card p-4 shadow-sm mb-4">
@@ -79,6 +136,8 @@
     </div>
   </div>
 
+
+
   <!-- Modal editar -->
   <div class="modal fade" id="modalEditarInstrumento" tabindex="-1" aria-hidden="true">
     <div class="modal-dialog">
@@ -125,6 +184,9 @@
     </div>
   </div>
 
+
+
+
   <!-- Bootstrap JS -->
   <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
 
@@ -167,6 +229,16 @@
       if (card) card.style.display = '';
     }
   }
+
+  // ================== VER ROL PARA MOSTRAR OPCIONES EXCEL ==================
+fetch('/tipo-usuario')
+    .then(r => r.json())
+    .then(data => {
+        if (data.tipo_usuario === "ADMIN") {
+            document.getElementById("excelSection").style.display = "block";
+        }
+    });
+
 
   // Cargar instrumentos
   async function cargarInstrumentos() {
@@ -323,8 +395,33 @@
       .replaceAll("'",'&#39;');
   }
 
+  // ====================== SUBIR EXCEL ======================
+document.getElementById("formUploadExcel").addEventListener("submit", async (e) => {
+    e.preventDefault();
+
+    const formData = new FormData(e.target);
+
+    const res = await fetch('/api/instrumentos/upload', {
+        method: 'POST',
+        body: formData
+    });
+
+    const result = await res.json();
+    alert(result.mensaje || result.error);
+
+    cargarInstrumentos();
+});
+
+// ====================== DESCARGAR EXCEL ======================
+function descargarExcel() {
+    window.location.href = "/api/instrumentos/download";
+}
+
+
   // Inicializar
   obtenerTipoUsuario();
+
+
   </script>
 </body>
 </html>

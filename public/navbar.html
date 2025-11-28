@@ -1,19 +1,14 @@
-
-  <!-- Estilo local -->
-<link rel="stylesheet" href="style.css">
-
+<!-- navbar.html -->
 <nav class="navbar navbar-expand-lg navbar-dark" style="background-color:#0d6efd;">
   <div class="container-fluid">
     <a class="navbar-brand" href="index.html">Lab Instruments</a>
 
     <button class="navbar-toggler" type="button" data-bs-toggle="collapse"
-      data-bs-target="#navbarNav" aria-controls="navbarNav" aria-expanded="false"
-      aria-label="Toggle navigation">
+      data-bs-target="#navbarNav">
       <span class="navbar-toggler-icon"></span>
     </button>
 
     <div class="collapse navbar-collapse" id="navbarNav">
-
       <ul class="navbar-nav me-auto">
 
         <li class="nav-item" id="navInstrumentos">
@@ -28,14 +23,13 @@
           <a class="nav-link" href="prestamos.html">Préstamos</a>
         </li>
 
-        <!-- Solo ADMIN podrá ver esta opción -->
         <li class="nav-item d-none" id="navUsuarios">
           <a class="nav-link" href="usuarios.html">Usuarios</a>
         </li>
 
-        <!-- Logout -->
         <li class="nav-item">
-          <button id="logoutBtn" class="btn btn-sm" style="background-color:#FFE2DF; border:none;">
+          <button id="logoutBtn" class="btn btn-sm" 
+            style="background-color:#FFE2DF; border:none;">
             <a href="/logout" style="text-decoration:none; color:#4B3832; font-weight:600;">
               Salir
             </a>
@@ -43,55 +37,8 @@
         </li>
 
       </ul>
-
     </div>
   </div>
 </nav>
-
-<script>
-/* ================================
-   VERIFICAR SESIÓN/ROL DESDE BACKEND
-================================ */
-fetch('/tipo-usuario', { credentials: 'include' })
-  .then(res => {
-    if (res.status === 401) {
-      window.location.href = '/login';
-      return;
-    }
-    return res.json();
-  })
-  .then(data => {
-    if (!data) return;
-
-    const rol = (data.tipo_usuario || data.rol || '').toUpperCase();
-
-    // === ROLES ===
-    if (rol === "ADMIN") {
-      document.getElementById("navUsuarios").classList.remove("d-none");
-    }
-
-    if (rol === "ASISTENTE") {
-      // Sin acceso a Usuarios
-      document.getElementById("navUsuarios").classList.add("d-none");
-    }
-
-    if (rol === "AUDITOR") {
-      // Auditor no modifica ni préstamos
-      document.getElementById("navUsuarios").classList.add("d-none");
-      document.getElementById("navPrestamos").classList.add("d-none");
-    }
-  })
-  .catch(err => {
-    console.error("Error verificando rol:", err);
-    window.location.href = '/login';
-  });
-
-/* ================================
-    LOGOUT
-================================ */
-document.getElementById('logoutBtn').onclick = () => {
-  fetch('/logout', { method: 'GET' });
-};
-</script>
 
 <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>

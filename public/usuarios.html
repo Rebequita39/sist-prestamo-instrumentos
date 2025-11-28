@@ -16,7 +16,37 @@
 </head>
 <body>
 
-  <div id="navbar-placeholder"></div>
+  <div id="navbar"></div>
+  <script>
+fetch("navbar.html")
+  .then(r => r.text())
+  .then(html => {
+    document.getElementById("navbar").innerHTML = html;
+    inicializarNavbar(); // Ejecutar controles DESPUÉS de insertar el navbar
+  });
+
+function inicializarNavbar() {
+
+  fetch('/tipo-usuario', { credentials: 'include' })
+    .then(r => r.json())
+    .then(data => {
+      const rol = (data.tipo_usuario || data.rol || "").toUpperCase();
+
+      if (rol === "ADMIN") {
+        document.getElementById("navUsuarios")?.classList.remove("d-none");
+      }
+
+      if (rol === "ASISTENTE") {
+        document.getElementById("navUsuarios")?.classList.add("d-none");
+      }
+
+      if (rol === "AUDITOR") {
+        document.getElementById("navUsuarios")?.classList.add("d-none");
+        document.getElementById("navPrestamos")?.classList.add("d-none");
+      }
+    });
+}
+</script>
 
   <div class="container mt-4">
     <h1 class="section-title mb-3">Administración de Usuarios</h1>
